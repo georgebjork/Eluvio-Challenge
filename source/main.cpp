@@ -7,11 +7,6 @@
 #include <set>
 #include <functional>
 
-
-//This vector will hold all of our binary files in numerical order. This allows for easy access
-std::vector<std::vector<unsigned char>> vectorsC;
-
-
 //This struct will hold all important information about the stadn we just found
 struct strands
 {
@@ -43,6 +38,7 @@ std::vector<unsigned char> readFile(std::string fileName)
   f.open("Binary Files/" + fileName, std::ios::in | std::ios::binary);
   if (f.is_open())
   {
+    //Input into a buffer vector to return 
     std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(f), {});
     std::cout << fileName << " has been opened and read into a byte vector with a size of " << buffer.size() << " bytes" << std::endl;
     return buffer;
@@ -74,6 +70,7 @@ strands findLongestStrand(std::vector<unsigned char> X, std::vector<unsigned cha
             // if the current character of X and Y matches
             if (X[i-1] == Y[j-1])
             {
+                //At the current index, get the number of the one diagonal to the current and add 1
                 table[i][j] = table[i-1][j-1] + 1;
  
                 // update length and index 
@@ -94,6 +91,8 @@ strands findLongestStrand(std::vector<unsigned char> X, std::vector<unsigned cha
 
 int main()
 {
+  //This vector will hold all of our binary files in numerical order. This allows for easy access
+  std::vector<std::vector<unsigned char>> vectorsC;
   //Put all binary files into an array
   std::string fileName = "";
   for (int i = 1; i <= 10; i++)
@@ -115,12 +114,13 @@ int main()
     for(int j = 0; j < vectorsC.size(); j++){
       if(j != i && j > i){
         std::cout << "Comparing sample." << i+1 << " and sample." << j+1 << std::endl;
+        //find longest strand will return a struct of strand and push it into a vector
         s.push_back(findLongestStrand(vectorsC[i], vectorsC[j], i, j));        
       }
     }
   }
 
-  //This will find the longest strand in the 
+  //This will find the longest strand out of the ones we collected
   strands finalStrand;
   int length;
   for(int i = 0; i < s.size(); i++){
@@ -134,7 +134,7 @@ int main()
   std::chrono::duration<double> elapsed_seconds = end - start;
 
   std::cout << "==========================================================================================" << std::endl;
-  std::cout << "The strands found were in files sample." << finalStrand.fileName1 << " and sample." << finalStrand.fileName2 << " with offsets " << finalStrand.offset1 << " and " << finalStrand.offset2 << " with a length of " << finalStrand.length << std::endl;
+  std::cout << "The longest strand was found in files sample." << finalStrand.fileName1 << " and sample." << finalStrand.fileName2 << " with offsets " << finalStrand.offset1 << " and " << finalStrand.offset2 << " with a length of " << finalStrand.length << std::endl;
   std::cout << "This program took " << elapsed_seconds.count()/60 << " minutes" << std::endl;
   return 0;
   }
